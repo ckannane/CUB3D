@@ -6,7 +6,7 @@
 #    By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/04 18:25:25 by ckannane          #+#    #+#              #
-#    Updated: 2023/10/08 18:44:34 by ckannane         ###   ########.fr        #
+#    Updated: 2023/10/16 12:56:22 by ckannane         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,11 +14,12 @@ NAME = cub3D
 
 CC = gcc
 
-CFLAGS = -lmlx -framework Cocoa -framework OpenGL -framework IOKit
+CFLAGS = -framework Cocoa -framework OpenGL -framework IOKit  -fsanitize=address -g
 
 RM = rm -f
 
 SRC = run.c get_next_line/get_next_line.c get_next_line/get_next_line_utils.c
+
 OBJ_SRC = $(SRC:.c=.o)
 
 all : $(NAME)
