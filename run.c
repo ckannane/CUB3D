@@ -28,6 +28,14 @@ int exit_now(t_bjt *map)
 	exit(0);
 }
 
+int	step_check(t_bjt *p)
+{
+	if ((p->mini_map[(int)(p->p_y) / 50][(int)p->tmp_x / 50] != '1'
+        && p->mini_map[(int)p->tmp_y/50][(int)(p->p_x - (1 /2) ) / 50] != '1'
+        && p->mini_map[(int)(p->tmp_y)/50][(int)p->tmp_x/50] != '1'))
+		return 1;
+	return 0;
+}
 //void putground(t_bjt *p, int i, int j)
 //{
 //	mlx_put_pixel(p->ground,i, j, 0xffffff);
@@ -115,28 +123,28 @@ int	rays_simulation(t_bjt *p,int in, double z)
 // int abs(int n) { return ((n > 0) ? n : (n * (-1))); }
 
 // DDA Function for line generation
-// void DDA(t_bjt *mlx, int X0, int Y0, int X1, int Y1)
-//{
-//     // calculate dx & dy
-//     int dx = X1 - X0;
-//     int dy = Y1 - Y0;
+void DDA(t_bjt *p, float X0, float Y0, float X1, float Y1)
+{
+    // calculate dx & dy
+    float dx = X1 - X0;
+    float dy = Y1 - Y0;
 
-//    // calculate steps required for generating pixels
-//    int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+   // calculate steps required for generating pixels
+   int steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
 
-//    // calculate increment in x & y for each steps
-//    float Xinc = dx / (float)steps;
-//    float Yinc = dy / (float)steps;
+   // calculate increment in x & y for each steps
+   float Xinc = dx / (float)steps;
+   float Yinc = dy / (float)steps;
 
-//    // Put pixel for each step
-//    float X = X0;
-//    float Y = Y0;
-//    for (int i = 0; i <= steps; i++) {
-//        mlx_put_pixel(mlx->mlx, mlx->win, X,Y, 0xff00ff); // put pixel at (X,Y)
-//        X += Xinc; // increment in x at each step
-//        Y += Yinc; // increment in y at each step
-//    }
-//}
+   // Put pixel for each step
+   float X = X0;
+   float Y = Y0;
+   for (int i = 0; i <= steps; i++) {
+       mlx_put_pixel(p->angle,X,Y,ft_pixel(0,255,0,255));
+       X += Xinc; // increment in x at each step
+       Y += Yinc; // increment in y at each step
+   }
+}
 
 void print_map(t_bjt *map)
 {
@@ -164,12 +172,9 @@ void print_map(t_bjt *map)
 
 void move_a(t_bjt *p)
 {
-	p->tmp_y = p->p_y + 3 * sin(p->p_angle);
-	p->tmp_x = p->p_x - 3 * cos(p->p_angle);
-		if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
-        || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y + (1 /2))/50] != '1'))
+	p->tmp_x = p->p_x + 3 * sin(p->p_angle);
+	p->tmp_y = p->p_y - 3 * cos(p->p_angle);
+	if (step_check(p))
 	{
 		p->p_x = p->tmp_x;
 		p->p_y = p->tmp_y;
@@ -178,12 +183,9 @@ void move_a(t_bjt *p)
 
 void move_d(t_bjt *p)
 {
-	p->tmp_y = p->p_y - 3 * sin(p->p_angle);
-	p->tmp_x = p->p_x + 3 * cos(p->p_angle);
-		if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
-        || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y + (1 /2))/50] != '1'))
+	p->tmp_x = p->p_x - 3 * sin(p->p_angle);
+	p->tmp_y = p->p_y + 3 * cos(p->p_angle);
+	if (step_check(p))
 	{
 		p->p_x = p->tmp_x;
 		p->p_y = p->tmp_y;
@@ -192,12 +194,9 @@ void move_d(t_bjt *p)
 
 void move_w(t_bjt *p)
 {
-	p->tmp_x = p->p_x + 3 * sin(p->p_angle);
-	p->tmp_y = p->p_y + 3 * cos(p->p_angle);
-		if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
-        || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y + (1 /2))/50] != '1'))
+	p->tmp_x = p->p_x + 3 * cos(p->p_angle);
+	p->tmp_y = p->p_y + 3 * sin(p->p_angle);
+	if (step_check(p))
 	{
 		p->p_x = p->tmp_x;
 		p->p_y = p->tmp_y;
@@ -206,12 +205,9 @@ void move_w(t_bjt *p)
 
 void move_s(t_bjt *p)
 {
-	p->tmp_x = p->p_x - 3 * sin(p->p_angle);
-	p->tmp_y = p->p_y - 3 * cos(p->p_angle);
-		if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
-        || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
-        || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y + (1 /2))/50] != '1'))
+	p->tmp_x = p->p_x - 3 * cos(p->p_angle);
+	p->tmp_y = p->p_y - 3 * sin(p->p_angle);
+	if (step_check(p))
 	{
 		p->p_x = p->tmp_x;
 		p->p_y = p->tmp_y;
@@ -219,16 +215,16 @@ void move_s(t_bjt *p)
 }
 void right_rot(t_bjt *p)
 {
-	p->p_angle += 0.3;
-	p->l_angle += 0.3;
-	p->r_angle += 0.3;
+	p->p_angle += 0.01;
+	// p->l_angle += 0.3;
+	// p->r_angle += 0.3;
 }
 
 void left_rot(t_bjt *p)
 {
-	p->p_angle -= 0.3;
-	p->l_angle -= 0.3;
-	p->r_angle -= 0.3;
+	p->p_angle -= 0.01;
+	// p->l_angle -= 0.3;
+	// p->r_angle -= 0.3;
 }
 
 void key_hook(void* map)
@@ -236,12 +232,6 @@ void key_hook(void* map)
 	t_bjt *p;
 
 	p = map;
-	//if ((int)p->p_angle == 360)
-	//	p->p_angle = 0;
-	//if ((int)p->l_angle == 360)
-	//	p->l_angle = 0;
-	//if ((int)p->r_angle == 360)
-	//	p->r_angle = 0;
 	//printf("%d\n",keycode.key);
 	//if(dont_hit_the_wall(p,0,p->p_angle))
 	//{
@@ -263,6 +253,10 @@ void key_hook(void* map)
 		if (mlx_is_key_down(p->mlx, MLX_KEY_LEFT))
 			left_rot(p);
 
+	if (p->p_angle > 2 * M_PI)
+		p->p_angle = 0;
+	if(p->p_angle < 0)
+		p->p_angle += 2*M_PI;
 	//if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
     //    || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
     //    || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
@@ -287,7 +281,7 @@ void key_hook(void* map)
 			jn = 0;
 			while (jn < 6)
 			{
-				mlx_put_pixel(p->angle,p->p_y + jn - 3, p->p_x + yu - 3, ft_pixel(255,0,0,255));
+				mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
 				jn++;
 			}
 			yu++;
@@ -300,27 +294,53 @@ void key_hook(void* map)
 		//	mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(0,255,0,255));
 		//	in++;
 		//}
-		double rays = p->r_angle;
-		while (rays <= p->l_angle)
+		// double rays = p->r_angle;
+		// while (rays <= p->l_angle)
+		// {
+		// 	in = 0;
+		// 	while(rays_simulation(p,in,rays))
+		// 	{
+		// 		XL =  in * (sin(rays));
+		// 		YL =  in * (cos(rays));
+		// 		mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(0,255,0,255));
+		// 		in++;
+		// 	}
+		// 	rays += 0.001;
+		// }
+		float AX;
+		float AY;
+		AY = (int)(p->p_y/50) * 50;
+		if(p->p_angle > 0 && p->p_angle < M_PI)
+			AY += 50;
+		AX = p->p_x + (AY - p->p_y)/tan(p->p_angle);
+		if((AX <= p->map_size_wide*50 && AX >= 0 && AY <= p->map_size_hight*50 && AY >= 0))
+		if(p->mini_map[(int)(AY/50)][(int)(AX/50)] != '1'&& p->mini_map[(int)(AY-1)/50][(int)(AX/50)] != '1')
+		while(1)
 		{
-			in = 0;
-			while(rays_simulation(p,in,rays))
-			{
-				XL =  in * (sin(rays));
-				YL =  in * (cos(rays));
-				mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(0,255,0,255));
-				in++;
-			}
-			rays += 0.001;
+			if(p->p_angle > 0 && p->p_angle < M_PI)
+				AY += 50;
+			else
+				AY -= 50;
+			AX = p->p_x + (AY - p->p_y)/tan(p->p_angle);
+			if(AX > p->map_size_wide*50 || AX <0)
+				break;
+			if(p->mini_map[(int)(AY/50)][(int)(AX/50)] == '1' || p->mini_map[(int)(AY-1)/50][(int)(AX/50)] == '1')
+				break;
 		}
-		in = 0;
-		while(in < 50)
-		{
-			XL =  in * (sin(p->p_angle));
-			YL =  in * (cos(p->p_angle));
-			mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(255,0,255,255));
-			in++;
-		}
+		if(AX > p->map_size_wide*50)
+			AX=p->map_size_wide*50-50;
+		if(AX <0)
+			AX=0;
+		DDA(p,p->p_x,p->p_y,AX,AY);
+
+		// in = 0;
+		// while(in < 50)
+		// {
+		// 	XL =  in * (cos(p->p_angle));
+		// 	YL =  in * (sin(p->p_angle));
+		// 	mlx_put_pixel(p->angle,p->p_x + XL, p->p_y + YL, ft_pixel(255,0,255,255));
+		// 	in++;
+		// }
 		//printf("distance from player to the wall = %d\nthe right view size = %d\nthe left view size = %d\n",in,(in/cos(30),));
 	//putplayer(p, p->p_y , p->p_x);
 }
@@ -420,8 +440,8 @@ void setup(t_bjt *map, int i, int j, int n)
 		{
 			if (map->mini_map[i][j] == 'P')
 			{
-				map->p_x = 50 * i - 25;
-				map->p_y = 50 * j - 25;
+				map->p_y = 50 * i;
+				map->p_x = 50 * j;
 			}
 			j++;
 		}
