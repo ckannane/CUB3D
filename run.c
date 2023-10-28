@@ -159,9 +159,7 @@ void print_map(t_bjt *map)
 		while (map->mini_map[i][j])
 		{
 			if (map->mini_map[i][j] == '1')
-			{
 				putwall(map, 1 * j, 1 * i);
-			}
 			j++;
 		}
 		i++;
@@ -271,8 +269,6 @@ void key_hook(void* map)
 	int XL;
 	int YL;
 
-	p->rotat_x = sin(p->p_angle);
-	p->rotat_y = cos(p->p_angle);
 	mlx_delete_image(p->mlx, p->angle);
 	p->angle =  mlx_new_image(p->mlx, 50 * p->map_size_wide, 50 * p->map_size_hight);
 	mlx_image_to_window(p->mlx, p->angle, 0, 0);
@@ -305,23 +301,56 @@ void key_hook(void* map)
 		// 		mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(0,255,0,255));
 		// 		in++;
 		// 	}
+		in = 0;
+		while(in <= p->map_size_wide*50)
+		{
+			int yux = 0;
+			while(yux < p->map_size_hight*50)
+				mlx_put_pixel(p->angle,in+50,yux++, ft_pixel(255,0,255,255));
+			in+=50;
+		}
+			in = 0;
+		while(in < p->map_size_hight*50)
+		{
+			int yux = 0;
+			while(yux < p->map_size_wide*50)
+				mlx_put_pixel(p->angle,yux++,in+50, ft_pixel(0,0,255,255));
+			in+=50;
+		}
 		// 	rays += 0.001;
 		// }
-		float AX;
-		float AY;
+		float AX = 0;
+		float AY = 0;
+		float save_AY;
+		float save_AX;
+		float dist_h;
+		float dist_v;
+		int rays = 0;
+		float angle;
+		angle = p->p_angle;
+
+	// while (rays <= p->map_size_wide*50)
+	// {
+	// 	// angle = rays/(p->map_size_wide*50) * M_PI/3 + p->p_angle - M_PI/6;
+	// 	printf("%f\n");
+	// if(angle < 0)
+	// 	angle += 2*M_PI;
+	// if (angle > 2 * M_PI)
+	// 	angle = 0;
+		// printf("%f\n",angle);
 		AY = (int)(p->p_y/50) * 50;
-		if(p->p_angle > 0 && p->p_angle < M_PI)
+		if(angle > 0 && angle < M_PI)
 			AY += 50;
-		AX = p->p_x + (AY - p->p_y)/tan(p->p_angle);
+		AX = p->p_x + (AY - p->p_y)/tan(angle);
 		if((AX <= p->map_size_wide*50 && AX >= 0 && AY <= p->map_size_hight*50 && AY >= 0))
 		if(p->mini_map[(int)(AY/50)][(int)(AX/50)] != '1'&& p->mini_map[(int)(AY-1)/50][(int)(AX/50)] != '1')
 		while(1)
 		{
-			if(p->p_angle > 0 && p->p_angle < M_PI)
+			if(angle > 0 && angle < M_PI)
 				AY += 50;
 			else
 				AY -= 50;
-			AX = p->p_x + (AY - p->p_y)/tan(p->p_angle);
+			AX = p->p_x + (AY - p->p_y)/tan(angle);
 			if(AX > p->map_size_wide*50 || AX <0)
 				break;
 			if(p->mini_map[(int)(AY/50)][(int)(AX/50)] == '1' || p->mini_map[(int)(AY-1)/50][(int)(AX/50)] == '1')
@@ -331,16 +360,47 @@ void key_hook(void* map)
 			AX=p->map_size_wide*50-50;
 		if(AX <0)
 			AX=0;
-		DDA(p,p->p_x,p->p_y,AX,AY);
+		dist_h = sqrt((p->p_y - AY)*(p->p_y - AY) + (p->p_x - AX)*(p->p_x - AX));
+		save_AX= AX;
+		save_AY = AY;
 
-		// in = 0;
-		// while(in < 50)
-		// {
-		// 	XL =  in * (cos(p->p_angle));
-		// 	YL =  in * (sin(p->p_angle));
-		// 	mlx_put_pixel(p->angle,p->p_x + XL, p->p_y + YL, ft_pixel(255,0,255,255));
-		// 	in++;
-		// }
+
+
+		AX = (int)(p->p_x/50)*50;
+		if((angle > 3*M_PI/2 && angle < 2*M_PI) || (angle >= 0 && angle =< M_PI/2))
+			AX += 50;
+		AY = p->p_y - (p->p_x - AX)*tan(angle);
+		if((AX <= p->map_size_wide*50 && AX >= 0 && AY <= p->map_size_hight*50 && AY >= 0))
+		if(p->mini_map[(int)(AY/50)][(int)(AX/50)] != '1'&& p->mini_map[(int)(AY)/50][(int)((AX-1)/50)] != '1')
+		while(1)
+		{
+			if((angle > 3*M_PI/2 && angle < 2*M_PI) || (angle > 0 && angle < M_PI/2))
+				AX += 50;
+			else
+				AX -= 50;
+			AY = p->p_y - (p->p_x - AX)*tan(angle); 
+			if(AY > p->map_size_hight*50 || AX > p->map_size_wide*50 || AY < 0 || AX < 0)
+				break;
+			if(p->mini_map[(int)(AY/50)][(int)(AX/50)] == '1' || p->mini_map[(int)(AY)/50][(int)((AX-1)/50)] == '1')
+				break;
+		}
+		if(AY > p->map_size_hight*50 || (AY < 0 && (angle > 0 && angle < M_PI)))
+		AY = p->map_size_hight*50;
+		if(AY < 0)
+		AY = 0;
+		if(AX > p->map_size_wide*50)
+			AX=p->map_size_wide*50;
+		if(AX <0)
+			AX=0;
+		dist_v = sqrt((p->p_y - AY)*(p->p_y - AY) + (p->p_x - AX)*(p->p_x - AX));
+		if(dist_h < dist_v)
+		{
+			AX= save_AX;
+			AY= save_AY;
+		}
+		DDA(p,p->p_x,p->p_y,AX,AY);
+		// rays++;
+	// }
 		//printf("distance from player to the wall = %d\nthe right view size = %d\nthe left view size = %d\n",in,(in/cos(30),));
 	//putplayer(p, p->p_y , p->p_x);
 }
@@ -440,8 +500,8 @@ void setup(t_bjt *map, int i, int j, int n)
 		{
 			if (map->mini_map[i][j] == 'P')
 			{
-				map->p_y = 50 * i;
-				map->p_x = 50 * j;
+				map->p_y = 50 * i +25;
+				map->p_x = 50 * j+25;
 			}
 			j++;
 		}
