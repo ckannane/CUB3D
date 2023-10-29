@@ -123,14 +123,14 @@ int	rays_simulation(t_bjt *p,int in, double z)
 // int abs(int n) { return ((n > 0) ? n : (n * (-1))); }
 
 // DDA Function for line generation
-void DDA(t_bjt *p, float X0, float Y0, float X1, float Y1)
+void DDA(t_bjt *p, int X0, int Y0, int X1, int Y1)
 {
     // calculate dx & dy
-    float dx = X1 - X0;
-    float dy = Y1 - Y0;
+    int dx = X1 - X0;
+    int dy = Y1 - Y0;
 
    // calculate steps required for generating pixels
-   int steps = fabs(dx) > fabs(dy) ? fabs(dx) : fabs(dy);
+   int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
 
    // calculate increment in x & y for each steps
    float Xinc = dx / (float)steps;
@@ -140,7 +140,7 @@ void DDA(t_bjt *p, float X0, float Y0, float X1, float Y1)
    float X = X0;
    float Y = Y0;
    for (int i = 0; i <= steps; i++) {
-       mlx_put_pixel(p->angle,X,Y,ft_pixel(0,255,0,255));
+       mlx_put_pixel(p->angle,X,Y,ft_pixel(255,255,255,255));
        X += Xinc; // increment in x at each step
        Y += Yinc; // increment in y at each step
    }
@@ -213,14 +213,14 @@ void move_s(t_bjt *p)
 }
 void right_rot(t_bjt *p)
 {
-	p->p_angle += 0.01;
+	p->p_angle += 0.1;
 	// p->l_angle += 0.3;
 	// p->r_angle += 0.3;
 }
 
 void left_rot(t_bjt *p)
 {
-	p->p_angle -= 0.01;
+	p->p_angle -= 0.1;
 	// p->l_angle -= 0.3;
 	// p->r_angle -= 0.3;
 }
@@ -251,10 +251,11 @@ void key_hook(void* map)
 		if (mlx_is_key_down(p->mlx, MLX_KEY_LEFT))
 			left_rot(p);
 
-	if (p->p_angle > 2 * M_PI)
-		p->p_angle = 0;
-	if(p->p_angle < 0)
+		if (p->p_angle > 2 * M_PI)
+		p->p_angle -= 2*M_PI;
+		if(p->p_angle < 0)
 		p->p_angle += 2*M_PI;
+		
 	//if ((p->mini_map[(int)(p->tmp_x - (1 /2)) / 50][(int)p->tmp_y / 50] != '1'
     //    || p->mini_map[(int)p->tmp_x/50][(int)(p->tmp_y - (1 /2) ) / 50] != '1'
     //    || p->mini_map[(int)(p->tmp_x + (1 /2))/50][(int)p->tmp_y/50] != '1'
@@ -272,16 +273,16 @@ void key_hook(void* map)
 	mlx_delete_image(p->mlx, p->angle);
 	p->angle =  mlx_new_image(p->mlx, 50 * p->map_size_wide, 50 * p->map_size_hight);
 	mlx_image_to_window(p->mlx, p->angle, 0, 0);
-		while(yu < 6)
-		{
-			jn = 0;
-			while (jn < 6)
-			{
-				mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
-				jn++;
-			}
-			yu++;
-		}
+		// while(yu < 6)
+		// {
+		// 	jn = 0;
+		// 	while (jn < 6)
+		// 	{
+		// 		mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
+		// 		jn++;
+		// 	}
+		// 	yu++;
+		// }
 
 		//while(dont_hit_the_wall(p,in,p->p_angle)==1)
 		//{
@@ -293,30 +294,22 @@ void key_hook(void* map)
 		// double rays = p->r_angle;
 		// while (rays <= p->l_angle)
 		// {
+		// in = 0;
+		// while(in <= p->map_size_wide*50)
+		// {
+		// 	int yux = 0;
+		// 	while(yux < p->map_size_hight*50)
+		// 		mlx_put_pixel(p->angle,in+50,yux++, ft_pixel(255,0,255,255));
+		// 	in+=50;
+		// }
 		// 	in = 0;
-		// 	while(rays_simulation(p,in,rays))
-		// 	{
-		// 		XL =  in * (sin(rays));
-		// 		YL =  in * (cos(rays));
-		// 		mlx_put_pixel(p->angle,p->p_y + YL, p->p_x + XL, ft_pixel(0,255,0,255));
-		// 		in++;
-		// 	}
-		in = 0;
-		while(in <= p->map_size_wide*50)
-		{
-			int yux = 0;
-			while(yux < p->map_size_hight*50)
-				mlx_put_pixel(p->angle,in+50,yux++, ft_pixel(255,0,255,255));
-			in+=50;
-		}
-			in = 0;
-		while(in < p->map_size_hight*50)
-		{
-			int yux = 0;
-			while(yux < p->map_size_wide*50)
-				mlx_put_pixel(p->angle,yux++,in+50, ft_pixel(0,0,255,255));
-			in+=50;
-		}
+		// while(in < p->map_size_hight*50)
+		// {
+		// 	int yux = 0;
+		// 	while(yux < p->map_size_wide*50)
+		// 		mlx_put_pixel(p->angle,yux++,in+50, ft_pixel(0,0,255,255));
+		// 	in+=50;
+		// }
 		// 	rays += 0.001;
 		// }
 		float AX = 0;
@@ -327,16 +320,22 @@ void key_hook(void* map)
 		float dist_v;
 		int rays = 0;
 		float angle;
-		angle = p->p_angle;
+		float this = p->map_size_wide*50;
+		angle = p->p_angle - (M_PI/6);
+		if (angle > 2 * M_PI)
+		angle = 0;
+		if(angle < 0)
+		angle = 2*M_PI;
 
-	// while (rays <= p->map_size_wide*50)
-	// {
-	// 	// angle = rays/(p->map_size_wide*50) * M_PI/3 + p->p_angle - M_PI/6;
-	// 	printf("%f\n");
-	// if(angle < 0)
-	// 	angle += 2*M_PI;
-	// if (angle > 2 * M_PI)
-	// 	angle = 0;
+	while (rays <= p->map_size_wide*50)
+	{
+		
+		// printf("%f\n");
+		angle = rays/(this)  + p->p_angle - M_PI/6;
+		if (angle > 2 * M_PI)
+		angle -= 2*M_PI;
+		if(angle < 0)
+		angle += 2*M_PI;
 		// printf("%f\n",angle);
 		AY = (int)(p->p_y/50) * 50;
 		if(angle > 0 && angle < M_PI)
@@ -357,7 +356,7 @@ void key_hook(void* map)
 				break;
 		}
 		if(AX > p->map_size_wide*50)
-			AX=p->map_size_wide*50-50;
+			AX=p->map_size_wide*50;
 		if(AX <0)
 			AX=0;
 		dist_h = sqrt((p->p_y - AY)*(p->p_y - AY) + (p->p_x - AX)*(p->p_x - AX));
@@ -367,14 +366,15 @@ void key_hook(void* map)
 
 
 		AX = (int)(p->p_x/50)*50;
-		if((angle > 3*M_PI/2 && angle < 2*M_PI) || (angle >= 0 && angle =< M_PI/2))
+		if(angle - 90 <= 0 && (angle <= M_PI/2 || angle >= 3*M_PI/2))
 			AX += 50;
+		// printf("%f\n",AX);
 		AY = p->p_y - (p->p_x - AX)*tan(angle);
 		if((AX <= p->map_size_wide*50 && AX >= 0 && AY <= p->map_size_hight*50 && AY >= 0))
 		if(p->mini_map[(int)(AY/50)][(int)(AX/50)] != '1'&& p->mini_map[(int)(AY)/50][(int)((AX-1)/50)] != '1')
 		while(1)
 		{
-			if((angle > 3*M_PI/2 && angle < 2*M_PI) || (angle > 0 && angle < M_PI/2))
+			if(angle - 90 <= 0 && (angle <= M_PI/2 || angle >= 3*M_PI/2))
 				AX += 50;
 			else
 				AX -= 50;
@@ -393,14 +393,63 @@ void key_hook(void* map)
 		if(AX <0)
 			AX=0;
 		dist_v = sqrt((p->p_y - AY)*(p->p_y - AY) + (p->p_x - AX)*(p->p_x - AX));
+		float dist;
 		if(dist_h < dist_v)
 		{
 			AX= save_AX;
 			AY= save_AY;
+			dist = dist_h;
+			// printf("hi");
 		}
-		DDA(p,p->p_x,p->p_y,AX,AY);
-		// rays++;
-	// }
+		else
+			dist = dist_v;
+		float distance_project = ((p->map_size_wide*50)/2) / tan(M_PI/4);
+		// dist *= cos(p->p_angle);
+		float project_hight = (50/dist)*distance_project;
+		if(project_hight < 0)
+		project_hight *= -1;
+		// if(project_hight > (p->map_size_hight*50))
+		// project_hight = (p->map_size_hight*50);
+		// printf("%f\n",angle);
+		float start = ((p->map_size_hight*50)/2) - project_hight;
+		// if(start < 0)
+		// 	start = project_hight - ((p->map_size_hight*50)/2);
+		// if(start < 0)
+		// start = 0;
+		float end = ((p->map_size_hight*50)/2) + project_hight;
+		if(start < 0)
+		start = 0;
+		if(start > ((p->map_size_hight*50)/2))
+		start = ((p->map_size_hight*50)/2);
+		if(end > (p->map_size_hight*50))
+		end = (p->map_size_hight*50);
+		if(end < (p->map_size_hight*50)/2)
+		end = (p->map_size_hight*50)/2;
+		printf("%f, %d\n",project_hight,rays);
+		DDA(p,rays,end,rays,start);
+		// printf("%f\n",angle);
+		// DDA(p,p->p_x,p->p_y,AX,AY);
+			in = 0;
+			while(in < 30)
+			{
+				XL =  in * (sin(p->p_angle));
+				YL =  in * (cos(p->p_angle));
+				mlx_put_pixel(p->angle,p->p_x + YL, p->p_y + XL, ft_pixel(0,255,0,255));
+				in++;
+			}
+			yu = 0;
+		while(yu < 6)
+		{
+			jn = 0;
+			while (jn < 6)
+			{
+				mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
+				jn++;
+			}
+			yu++;
+		}
+		rays++;
+	}
 		//printf("distance from player to the wall = %d\nthe right view size = %d\nthe left view size = %d\n",in,(in/cos(30),));
 	//putplayer(p, p->p_y , p->p_x);
 }
@@ -412,7 +461,7 @@ void render(int height, int wide, t_bjt *map)
 	map->angle =  mlx_new_image(map->mlx, 50 * map->map_size_wide,  50 * map->map_size_hight);
 	map->player = mlx_new_image(map->mlx, 50 * map->map_size_wide,  50 * map->map_size_hight);
 	map->wall = mlx_texture_to_image(map->mlx, map->walli);
-	print_map(map);
+	// print_map(map);
 	//putplayer(map, map->p_y, map->p_x);
 	mlx_image_to_window(map->mlx, map->player, 0, 0);
 	mlx_image_to_window(map->mlx, map->angle, 0, 0);
