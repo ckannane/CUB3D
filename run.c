@@ -36,6 +36,10 @@ int	step_check(t_bjt *p)
 		return 1;
 	return 0;
 }
+float	degree_to_radians(float degree)
+{
+	return (degree * M_PI / 180);
+}
 //void putground(t_bjt *p, int i, int j)
 //{
 //	mlx_put_pixel(p->ground,i, j, 0xffffff);
@@ -123,8 +127,9 @@ int	rays_simulation(t_bjt *p,int in, double z)
 // int abs(int n) { return ((n > 0) ? n : (n * (-1))); }
 
 // DDA Function for line generation
-void DDA(t_bjt *p, int X0, int Y0, int X1, int Y1)
+void DD_earth(t_bjt *p, int X0, int Y0, int X1, int Y1)
 {
+	int opacity = 0;
     // calculate dx & dy
     int dx = X1 - X0;
     int dy = Y1 - Y0;
@@ -139,8 +144,64 @@ void DDA(t_bjt *p, int X0, int Y0, int X1, int Y1)
    // Put pixel for each step
    float X = X0;
    float Y = Y0;
+	// if(p->wall_height < (p->map_size_hight*50)/2)
    for (int i = 0; i <= steps; i++) {
-       mlx_put_pixel(p->angle,X,Y,ft_pixel(255,255,255,255));
+       mlx_put_pixel(p->angle,X,Y,ft_pixel(50,50,50,255));
+       X += Xinc; // increment in x at each step
+       Y += Yinc; // increment in y at each step
+   }
+}
+
+void DD_sky(t_bjt *p, int X0, int Y0, int X1, int Y1)
+{
+	int opacity = 0;
+    // calculate dx & dy
+    int dx = X1 - X0;
+    int dy = Y1 - Y0;
+
+   // calculate steps required for generating pixels
+   int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+
+   // calculate increment in x & y for each steps
+   float Xinc = dx / (float)steps;
+   float Yinc = dy / (float)steps;
+
+   // Put pixel for each step
+   float X = X0;
+   float Y = Y0;
+	// if(p->wall_height < (p->map_size_hight*50)/2)
+   for (int i = 0; i <= steps; i++) {
+       mlx_put_pixel(p->angle,X,Y,ft_pixel(0, 0,70,255));
+       X += Xinc; // increment in x at each step
+       Y += Yinc; // increment in y at each step
+   }
+}
+
+void DDA(t_bjt *p, int X0, int Y0, int X1, int Y1)
+{
+	int opacity = 0;
+    // calculate dx & dy
+    int dx = X1 - X0;
+    int dy = Y1 - Y0;
+
+   // calculate steps required for generating pixels
+   int steps = abs(dx) > abs(dy) ? abs(dx) : abs(dy);
+
+   // calculate increment in x & y for each steps
+   float Xinc = dx / (float)steps;
+   float Yinc = dy / (float)steps;
+
+   // Put pixel for each step
+   float X = X0;
+   float Y = Y0;
+	// if(p->wall_height < (p->map_size_hight*50)/2)
+	opacity = p->wall_height/((p->map_size_hight*50)/2) * 255;
+	if(opacity <= 0)
+		opacity = 10;
+	if(opacity >= 255)
+		opacity = 255;
+   for (int i = 0; i <= steps; i++) {
+       mlx_put_pixel(p->angle,X,Y,ft_pixel(255,255,255,opacity));
        X += Xinc; // increment in x at each step
        Y += Yinc; // increment in y at each step
    }
@@ -213,14 +274,14 @@ void move_s(t_bjt *p)
 }
 void right_rot(t_bjt *p)
 {
-	p->p_angle += 0.1;
+	p->p_angle += 0.05;
 	// p->l_angle += 0.3;
 	// p->r_angle += 0.3;
 }
 
 void left_rot(t_bjt *p)
 {
-	p->p_angle -= 0.1;
+	p->p_angle -= 0.05;
 	// p->l_angle -= 0.3;
 	// p->r_angle -= 0.3;
 }
@@ -326,8 +387,20 @@ void key_hook(void* map)
 		angle = 0;
 		if(angle < 0)
 		angle = 2*M_PI;
-
-	while (rays <= p->map_size_wide*50)
+		int sky = 0;
+		while(sky < (p->map_size_hight*50)/2)
+		{
+			DD_sky(p,0,sky,p->map_size_wide*50,sky);
+			// printf("hi");
+			sky++;
+		}
+		while(sky < (p->map_size_hight*50))
+		{
+			DD_earth(p,0,sky,p->map_size_wide*50,sky);
+			// printf("hi");
+			sky++;
+		}
+	while (rays < p->map_size_wide*50)
 	{
 		
 		// printf("%f\n");
@@ -393,30 +466,31 @@ void key_hook(void* map)
 		if(AX <0)
 			AX=0;
 		dist_v = sqrt((p->p_y - AY)*(p->p_y - AY) + (p->p_x - AX)*(p->p_x - AX));
-		float dist;
+		// float dist;
 		if(dist_h < dist_v)
 		{
 			AX= save_AX;
 			AY= save_AY;
-			dist = dist_h;
+			p->dist = dist_h;
 			// printf("hi");
 		}
 		else
-			dist = dist_v;
+			p->dist = dist_v;
+		p->dist = p->dist * cos(p->p_angle - angle);
 		float distance_project = ((p->map_size_wide*50)/2) / tan(M_PI/4);
-		// dist *= cos(p->p_angle);
-		float project_hight = (50/dist)*distance_project;
-		if(project_hight < 0)
-		project_hight *= -1;
-		// if(project_hight > (p->map_size_hight*50))
-		// project_hight = (p->map_size_hight*50);
+		// dist += cos(angle);
+		 p->wall_height = (50/p->dist)*distance_project;
+		if(p->wall_height < 0)
+		p->wall_height *= -1;
+		// if(p->wall_height > (p->map_size_hight*50))
+		// p->wall_height = (p->map_size_hight*50);
 		// printf("%f\n",angle);
-		float start = ((p->map_size_hight*50)/2) - project_hight;
+		float start = ((p->map_size_hight*50)/2) - p->wall_height;
 		// if(start < 0)
-		// 	start = project_hight - ((p->map_size_hight*50)/2);
+		// 	start = p->wall_height - ((p->map_size_hight*50)/2);
 		// if(start < 0)
 		// start = 0;
-		float end = ((p->map_size_hight*50)/2) + project_hight;
+		float end = ((p->map_size_hight*50)/2) + p->wall_height;
 		if(start < 0)
 		start = 0;
 		if(start > ((p->map_size_hight*50)/2))
@@ -425,29 +499,41 @@ void key_hook(void* map)
 		end = (p->map_size_hight*50);
 		if(end < (p->map_size_hight*50)/2)
 		end = (p->map_size_hight*50)/2;
-		printf("%f, %d\n",project_hight,rays);
-		DDA(p,rays,end,rays,start);
+		// printf("%f, %d\n",project_hight,rays);
+		// int sky = 0;
+		// while(sky < (p->map_size_hight*50))
+		// {
+		// 	DD_sky(p,0,sky,p->map_size_wide*50,sky);
+		// 	// printf("hi");
+		// 	sky++;
+		// }
+		DDA(p,rays,start,rays,end);
 		// printf("%f\n",angle);
 		// DDA(p,p->p_x,p->p_y,AX,AY);
-			in = 0;
-			while(in < 30)
-			{
-				XL =  in * (sin(p->p_angle));
-				YL =  in * (cos(p->p_angle));
-				mlx_put_pixel(p->angle,p->p_x + YL, p->p_y + XL, ft_pixel(0,255,0,255));
-				in++;
-			}
-			yu = 0;
-		while(yu < 6)
-		{
-			jn = 0;
-			while (jn < 6)
-			{
-				mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
-				jn++;
-			}
-			yu++;
-		}
+		// while(y <= (p->map_size_hight*50))
+		// {
+			// DD_earth(p,0,y,p->map_size_wide*50,y);
+		// 	y++;
+		// }
+	// 		in = 0;
+	// 		while(in < 30)
+	// 		{
+	// 			XL =  in * (sin(p->p_angle));
+	// 			YL =  in * (cos(p->p_angle));
+	// 			mlx_put_pixel(p->angle,p->p_x + YL, p->p_y + XL, ft_pixel(0,255,0,255));
+	// 			in++;
+	// 		}
+	// 		yu = 0;
+	// 	while(yu < 6)
+	// 	{
+	// 		jn = 0;
+	// 		while (jn < 6)
+	// 		{
+	// 			mlx_put_pixel(p->angle,p->p_x + jn - 3, p->p_y + yu - 3, ft_pixel(255,0,0,255));
+	// 			jn++;
+	// 		}
+	// 		yu++;
+	// 	}
 		rays++;
 	}
 		//printf("distance from player to the wall = %d\nthe right view size = %d\nthe left view size = %d\n",in,(in/cos(30),));
@@ -459,11 +545,11 @@ void render(int height, int wide, t_bjt *map)
 	map->mlx = mlx_init(50 * map->map_size_wide, 50 * map->map_size_hight, "CUB3D", true);
 	map->walli = mlx_load_png("textures/images.png");
 	map->angle =  mlx_new_image(map->mlx, 50 * map->map_size_wide,  50 * map->map_size_hight);
-	map->player = mlx_new_image(map->mlx, 50 * map->map_size_wide,  50 * map->map_size_hight);
+	map->shadow = mlx_new_image(map->mlx, 50 * map->map_size_wide,  50 * map->map_size_hight);
 	map->wall = mlx_texture_to_image(map->mlx, map->walli);
 	// print_map(map);
 	//putplayer(map, map->p_y, map->p_x);
-	mlx_image_to_window(map->mlx, map->player, 0, 0);
+	mlx_image_to_window(map->mlx, map->shadow, 0, 0);
 	mlx_image_to_window(map->mlx, map->angle, 0, 0);
 	mlx_loop_hook(map->mlx, key_hook, map);
 	//mlx_delete_image(map->mlx, map->player);
@@ -575,3 +661,4 @@ int main(int ac, char **av)
 	render(height, wide, map);
 	return (0);
 }
+
