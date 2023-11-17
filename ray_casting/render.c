@@ -6,7 +6,7 @@
 /*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/08 20:39:39 by ckannane          #+#    #+#             */
-/*   Updated: 2023/11/12 17:28:14 by ckannane         ###   ########.fr       */
+/*   Updated: 2023/11/17 01:35:19 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ void	render(t_bjt *map)
 	map->west = mlx_load_png(map->WE[1]);
 	map->east = mlx_load_png(map->EA[1]);
 	map->south = mlx_load_png(map->SO[1]);
+	if (!map->north || !map->south || !map->west || !map->east)
+		erroc_exit(map, "texture no value");
 	map->angle = mlx_new_image(map->mlx, WIDE, HEIGHT);
 	map->shadow = mlx_new_image(map->mlx, WIDE, HEIGHT);
 	sky_ground(map);

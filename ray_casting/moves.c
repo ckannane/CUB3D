@@ -6,7 +6,7 @@
 /*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 14:46:38 by ckannane          #+#    #+#             */
-/*   Updated: 2023/11/13 15:39:39 by ckannane         ###   ########.fr       */
+/*   Updated: 2023/11/16 19:54:43 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,24 +19,24 @@ int	step_check(t_bjt *p)
 
 	j = p->tmp_x / (SQ);
 	i = p->tmp_y / (SQ);
-	if (p->mini_map[(int)i][(int)j] == '1' || p->mini_map[(int)i][(int)j] == '2'
-	|| p->mini_map[(int)i][(int)j] == '3')
+	if (p->mini_map[(int)i][(int)j] == '1' ||
+		p->mini_map[(int)i][(int)j] == '2')
 		return (0);
 	i = (p->tmp_y + 2) / SQ;
-	if (p->mini_map[(int)i][(int)j] == '1' || p->mini_map[(int)i][(int)j] == '2'
-	|| p->mini_map[(int)i][(int)j] == '3')
+	if (p->mini_map[(int)i][(int)j] == '1' ||
+		p->mini_map[(int)i][(int)j] == '2')
 		return (0);
 	i = (p->tmp_y - 2) / SQ;
-	if (p->mini_map[(int)i][(int)j] == '1' || p->mini_map[(int)i][(int)j] == '2' 
-	|| p->mini_map[(int)i][(int)j] == '3')
+	if (p->mini_map[(int)i][(int)j] == '1' ||
+		p->mini_map[(int)i][(int)j] == '2' )
 		return (0);
 	j = (p->tmp_x + 2) / SQ;
-	if (p->mini_map[(int)i][(int)j] == '1' || p->mini_map[(int)i][(int)j] == '2'
-		|| p->mini_map[(int)i][(int)j] == '3')
+	if (p->mini_map[(int)i][(int)j] == '1' ||
+		p->mini_map[(int)i][(int)j] == '2')
 		return (0);
 	j = (p->tmp_x - 2) / SQ;
-	if (p->mini_map[(int)i][(int)j] == '1' || p->mini_map[(int)i][(int)j] == '2'
-		|| p->mini_map[(int)i][(int)j] == '3')
+	if (p->mini_map[(int)i][(int)j] == '1' ||
+		p->mini_map[(int)i][(int)j] == '2')
 		return (0);
 	return (1);
 }

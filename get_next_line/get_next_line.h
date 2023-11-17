@@ -5,28 +5,27 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/01 15:57:34 by ckannane          #+#    #+#             */
-/*   Updated: 2023/10/07 12:28:31 by ckannane         ###   ########.fr       */
+/*   Created: 2022/11/25 19:25:01 by otelliq           #+#    #+#             */
+/*   Updated: 2023/11/15 16:15:40 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
+# include<stdio.h>
+# include<unistd.h>
+# include<stdlib.h>
+# include<fcntl.h>
 
-# include <string.h>
-# include <unistd.h>
-# include <stdlib.h>
-# include <fcntl.h>
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 9
+# endif
 
-size_t	ft_strlen(const char	*c);
-int		ft_strchro(const char *s, int c);
-void	*ft_memset(void *b, int c, size_t n);
-void	ft_bzero(void *s, size_t n);
-void	*ft_calloc(size_t count, size_t size);
-char	*ft_strjoin(char *s1, char *s2);
 char	*get_next_line(int fd);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
-char	*ft_strdup(const char *s1);
-void	*ft_memcpy(void *dst, const void *src, size_t n);
-
+char	*get_first_line(char *s);
+char	*get_rest_line(char *s);
+char	*ft_read_line(int fd, char *s);
+int		ft_strlenn(char *s);
+char	*ft_strjoinn(char *s1, char *s2);
+char	*ft_strchrr(char *str, char c);
 #endif

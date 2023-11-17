@@ -6,7 +6,7 @@
 /*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/04 18:25:37 by ckannane          #+#    #+#             */
-/*   Updated: 2023/11/10 19:47:49 by ckannane         ###   ########.fr       */
+/*   Updated: 2023/11/17 01:44:34 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,17 @@ void	checkfile_name(char **av)
 	}
 }
 
+void	check_all(t_bjt *map)
+{
+	if (!tab_check(map))
+		erroc_exit(map, "Tab Found");
+	else if (!border_check(map->mini_map) || !borders_checker(map))
+		erroc_exit(map, "Invalid map!");
+	else if (!one_check(map) || !component_check(map) || 
+		!component_check(map) || player_checker(map->mini_map) > 1)
+		erroc_exit(map, "Numbers incorrects, Invalid map!");
+}
+
 int	main(int ac, char **av)
 {
 	t_bjt	*map;
@@ -110,11 +121,13 @@ int	main(int ac, char **av)
 	map = malloc(sizeof(t_bjt));
 	height = colon_size(av);
 	map->file = read_map(av, height);
+	fill_map(map);
+	setup(map, 0, 0, 0);
+	zero_check(map);
 	ft_texture(map);
 	ft_colors(map);
 	checker00(map);
-	fill_map(map);
-	setup(map, 0, 0, 0);
+	check_all(map);
 	map->map_size_hight = ft_hight_size(map->mini_map);
 	map->map_size_wide = ft_len(map->mini_map);
 	render(map);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: otelliq <otelliq@student.1337.ma>          +#+  +:+       +#+        */
+/*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/05 10:41:45 by otelliq           #+#    #+#             */
-/*   Updated: 2023/10/12 12:54:04 by otelliq          ###   ########.fr       */
+/*   Updated: 2023/11/17 01:34:16 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,61 +14,60 @@
 
 void	checker00(t_bjt *m_c)
 {
-	if(m_c->floor_R > 225 || m_c->floor_R < 0 || m_c->floor_G > 225 || m_c->floor_G < 0 || m_c->floor_B > 225 || m_c->floor_B < 0 || m_c->sky_R > 225 || m_c->sky_R < 0 || m_c->sky_G > 225 || m_c->sky_G < 0 ||  m_c->sky_B > 225 || m_c->sky_B < 0)
-	{
-		printf("Error, invalid RGB!");
-		exit(0);
-	}
-	// if (player_checker(map) != 1)
-	// {
-	// 	printf("Error, invalid player count!");
-	// 	exit(0);
-	// }
-	// if (!borders_checker(map))
-	// {
-	// 	printf("Error, invalid map borders!");
-	// 	exit(0);
-	// }
-
+	if (m_c->floor_R > 225 || m_c->floor_R < 0 || 
+		m_c->floor_G > 225 || m_c->floor_G < 0 || 
+		m_c->floor_B > 225 || m_c->floor_B < 0 || 
+		m_c->sky_R > 225 || m_c->sky_R < 0 || 
+		m_c->sky_G > 225 || m_c->sky_G < 0 || 
+		m_c->sky_B > 225 || m_c->sky_B < 0)
+		erroc_exit(m_c, "Error, invalid RGB!");
 }
-// int	walls_checker(t_map_data *m_d)
-// {
-// 	int	i;
 
-// 	i = 0;
-// 	while (i < m_d -> col_count)
-// 	{
-// 		if (m_d->map[0][i] != '1')
-// 			return (0);
-// 	i++;
-// 	}
-// 	i = 0;
-// 	while (i < m_d -> col_count)
-// 	{
-// 		if (m_d->map[m_d -> row_count - 1][i] != '1')
-// 			return (0);
-// 	i++;
-// 	}
-// 	i = 1;
-// 	while (i < m_d -> row_count -1)
-// 	{
-// 		if (m_d->map[i][0] != '1' || m_d->map[i][m_d-> col_count - 1] != '1')
-// 			return (0);
-// 		i++;
-// 	}
-// 	return (1);
-// }
-
-// void	map_filler(t_map_data *m_d)
-// {
-// 	int i = 0;
-// 	int len = 0;
-// 	char *tmp;
-// 	while(m_d->map[len])
-// 	i++;
-// }
-void	error_printf(char *s)
+int	check_to_fill(t_bjt *m_d, int count_b, int count_a)
 {
-	printf("%s\n", s);
-	exit(1);
+	int	i;
+	int	j;
+
+	i = 6;
+	while (m_d->file[i])
+	{
+		j = 0;
+		while (m_d->file[i][j])
+		{
+			if (m_d->file[i][j] != ' ' && m_d->file[i][j] != '\n' && 
+				m_d->file[i][j] != '1' && m_d->file[i][j] != '0' && 
+				m_d->file[i][j] != 'N')
+				return (0);
+			else if (m_d->file[i][j] == '\n')
+				count_a++;
+			else if (m_d->file[i][j] == '1' || m_d->file[i][j] == '0')
+				count_b++;
+			j++;
+		}
+		if (count_a >= 0 && count_b > 0)
+			return (i);
+		i++;
+	}
+	return (0);
+}
+
+int	ft_len(char **mini_map)
+{
+	int	len;
+	int	longest;
+	int	i;
+
+	longest = 0;
+	i = 0;
+	while (mini_map[i])
+	{
+		if (mini_map[i])
+		{
+			len = ft_strlen(mini_map[i]);
+			if (len > longest)
+				longest = len;
+		}
+		i++;
+	}
+	return (longest);
 }

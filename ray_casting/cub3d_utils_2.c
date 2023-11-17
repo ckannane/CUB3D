@@ -6,7 +6,7 @@
 /*   By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/09 18:15:51 by ckannane          #+#    #+#             */
-/*   Updated: 2023/11/10 20:35:43 by ckannane         ###   ########.fr       */
+/*   Updated: 2023/11/16 19:53:52 by ckannane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,20 +79,16 @@ char	**read_map(char **av, int size)
 
 	i = 0;
 	fd = open(av[1], O_RDONLY);
-	if (fd == -1 || av[1] == NULL)
-	{
-		printf("map path not found");
+	if (fd == -1)
 		exit(1);
-	}
 	tmp = get_next_line(fd);
+	map = malloc(sizeof(char *) * (size + 1));
 	while (i < size)
 	{
-		new = get_next_line(fd);
-		tmp = ft_strjoin(tmp, new);
-		free(new);
+		map[i] = tmp;
+		tmp = get_next_line(fd);
 		i++;
 	}
-	map = ft_split(tmp, '\n');
-	free(tmp);
+	map[i] = 0;
 	return (map);
 }
