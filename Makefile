@@ -6,7 +6,7 @@
 #    By: ckannane <ckannane@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/10/04 18:25:25 by ckannane          #+#    #+#              #
-#    Updated: 2023/11/17 01:44:56 by ckannane         ###   ########.fr        #
+#    Updated: 2023/11/18 13:00:03 by ckannane         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ RM = rm -f
 
 FILE = ray_casting/run.c ray_casting/render.c
 
-FILE_BNS = cub3d_bonus/run.c
+FILE_BNS = cub3d_bonus/run.c cub3d_bonus/moves.c cub3d_bonus/print.c cub3d_bonus/ray.c cub3d_bonus/render1.c cub3d_bonus/wall.c cub3d_bonus/wall2.c cub3d_bonus/check_bns.c
 
 SRC = get_next_line/get_next_line.c get_next_line/get_next_line_utils.c \
 parsing/map_pars.c parsing/utils_2.c parsing/check_numbers.c parsing/map_check.c parsing/map_check_utils.c parsing/utils.c ray_casting/moves.c ray_casting/cub3d_utiles.c \
